@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x", "linux-arm64-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+  salt     String
+  status   String @default("active") // "active" or "inactive"
+
+  records   Record[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  wallet    Wallet[]
+}
+
+model Operation {
+  id     Int     @id @default(autoincrement())
+  type   String // "addition", "subtraction", "multiplication", "division", "square_root", "random_string"
+  name   String
+  symbol String @unique
+  cost   Float
+
+  records   Record[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+}
+
+model Record {
+  id                 Int    @id @default(autoincrement())
+  operation_id       Int
+  user_id            Int
+  formula_id         Int?
+  amount             Float
+  operation_request  String?
+  operation_response String
+
+  operation Operation @relation(fields: [operation_id], references: [id])
+  user      User      @relation(fields: [user_id], references: [id])
+  formula   Formula?   @relation(fields: [formula_id], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+}
+
+model Formula {
+  id     Int    @id @default(autoincrement())
+  data   String
+  result String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  Record    Record[]
+}
+
+model Wallet {
+  id      Int  @id @default(autoincrement())
+  user_id Int
+  type String // credit or debit
+  value Float
+  hash String?
+  user    User @relation(fields: [user_id], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+}

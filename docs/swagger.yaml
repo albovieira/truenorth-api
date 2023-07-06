@@ -1,0 +1,222 @@
+openapi: 3.0.0
+info:
+  title: API
+  version: 1.0.0
+servers:
+  - url: http://localhost:4000/v1
+  - url: http://ec2-34-238-119-22.compute-1.amazonaws.com:4000
+tags:
+  - name: General
+  - name: Account
+  - name: Wallet
+  - name: Calculator
+  - name: RandomString
+  - name: Records
+  - name: Reports
+paths:
+  /healthcheck:
+    get:
+      tags: 
+        - General
+      summary: Health Check
+      responses:
+        '200':
+          description: OK
+  /account/register:
+      post:
+        tags:
+          - Account
+        summary: Create New User
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                  password:
+                    type: string
+        responses:
+          '201':
+            description: OK
+  /account/auth:
+    post:
+      tags:
+        - Account
+      summary: User Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: OK
+  /account:
+    put:
+      security:
+        - bearerAuth: []
+
+      tags:
+        - Account
+      summary: Enable/Disable Account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enable:
+                  type: boolean
+      responses:
+        '200':
+          description: OK        
+  /wallet:
+    get:
+      security:
+        - bearerAuth: []
+      tags: 
+        - Wallet
+      summary: Get Balance
+      responses:
+        '200':
+          description: OK
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Wallet
+      summary: Add Balance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                credits:
+                  type: integer
+        
+      responses:
+        200:
+          description: OK
+  /calculator:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Calculator
+      summary: Calculate formula
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                formula:
+                  type: string
+      responses:
+        200:
+          description: OK
+  /random-string:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - RandomString
+      summary: Generate Random String
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                length:
+                  type: integer
+      responses:
+        200:
+          description: OK
+  /record:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Records
+      summary: Retrieve records
+      parameters:
+        - name: Page
+          in: query
+          description: Page
+          required: false
+          explode: true
+          schema:
+            type: integer
+        - name: Limit
+          in: query
+          description: Limit
+          required: false
+          explode: true
+          schema:
+            type: integer
+        - name: Sort
+          in: query
+          description: Limit
+          required: false
+          explode: true
+          schema:
+            type: string
+        - name: Search
+          in: query
+          description: Search
+          required: false
+          explode: true
+          schema:
+            type: string
+  
+      responses:
+        '200':
+          description: Successful request
+  /record/{id}:        
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Records
+      summary: Deletes a record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful request
+  /report:
+    get:
+      security:
+        - bearerAuth: []
+      tags: 
+        - Reports
+      summary: Get Report
+      responses:
+        '200':
+          description: OK
+          
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
