@@ -80,7 +80,7 @@ http://localhost:4000/docs
 
 
 Server
-http://ec2-34-238-119-22.compute-1.amazonaws.com:4000/docs
+http://ec2-44-204-72-27.compute-1.amazonaws.com:4000/docs
 
 
 Additionally, it is possible to obtain an Insomnia collection named `collection.json` located in the /docs folder.
